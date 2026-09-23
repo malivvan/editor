@@ -52,7 +52,11 @@ jobs:
       # `make demo` is the local convenience; CI drives `go` directly because
       # a runner image is not guaranteed to have make on PATH.
       - name: Build demo
-        run: go build ./demo
+        # `demo` is also a directory in the checkout, so the default output
+        # name would collide with it. Build to a throwaway path under
+        # runner.temp rather than `-o /dev/null`, which is the null device on
+        # Unix only: on Windows the target has to be a real path.
+        run: go build -o "${{ runner.temp }}/demo-build" ./demo
 
       - name: Test (no race)
         if: matrix.os != 'ubuntu-latest'
