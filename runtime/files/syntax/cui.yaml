@@ -1,0 +1,72 @@
+filetype: cui
+
+detect:
+    filename: "\\.cui$"
+
+rules:
+    # XML comments
+    - comment:
+        start: "<!--"
+        end: "-->"
+        rules:
+            - todo: "(TODO|XXX|FIXME):?"
+
+    # CDATA sections
+    - constant.string:
+        start: "<!\\[CDATA\\["
+        end: "\\]\\]>"
+        rules: []
+
+    # XML processing instructions
+    - preproc:
+        start: "<\\?"
+        end: "\\?>"
+        rules: []
+
+    # Widget tags (primary)
+    - tag: "(?i)</?\\b(box|flex|grid|panels|tabbedpanels|textview|text|button|checkbox|inputfield|input|dropdown|select|form|list|table|treeview|tree|image|progressbar|progress|slider|gauge|barchart|plot|sparkline|spinner|modal|frame|window|windowmanager|splitter)\\b"
+
+    # Structural child tags
+    - tag: "(?i)</?\\b(option|item|li|node|row|tr|cell|td|th)\\b"
+
+    # Self-closing and closing markers
+    - tag: "/?>|</"
+
+    # Style attribute with embedded CSS
+    - type:
+        start: "\\bstyle\\s*=\\s*\""
+        end: "\""
+        rules:
+            - statement: "[a-z][a-z-]*\\s*:"
+            - symbol.operator: "[;]"
+            - constant.number: "[0-9]+(\\.[0-9]+)?(px|em|%)?"
+            - constant.bool: "\\b(true|false)\\b"
+            - special: "\\b(red|green|blue|yellow|white|black|gray|cyan|magenta|orange|purple|pink|brown|darkcyan|darkgray|darkgreen|darkred|darkblue|darkmagenta|darkyellow)\\b"
+            - constant.string: "'[^']*'"
+
+    # Common Box attributes
+    - type: "[a-z]([a-z-]*[a-z])?="
+
+    # Attribute value strings
+    - constant.string:
+        start: "\""
+        end: "\""
+        skip: "\\\\."
+        rules:
+            - constant.specialChar: "&(amp|lt|gt|quot|apos|#[0-9]+|#x[0-9a-fA-F]+);"
+            - constant.bool: "\\b(true|false)\\b"
+            - constant.number: "\\b[0-9]+(\\.[0-9]+)?\\b"
+
+    - constant.string:
+        start: "'"
+        end: "'"
+        skip: "\\\\."
+        rules:
+            - constant.specialChar: "&(amp|lt|gt|quot|apos|#[0-9]+|#x[0-9a-fA-F]+);"
+
+    # XML entities in text content
+    - constant.specialChar: "&(amp|lt|gt|quot|apos|#[0-9]+|#x[0-9a-fA-F]+);"
+
+    # Attribute equals sign
+    - symbol.operator: "="
+
